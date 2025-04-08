@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Cilindros | Geometría en las Ondas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3A86FF;
+            --secondary: #8338EC;
+            --accent: #FF006E;
+            --gold: #FFBE0B;
+            --dark: #1A1A2E;
+            --light: #F8F9FA;
+            --math-symbol: #FB5607;
+            --success: #4CC9F0;
+            --error: #F72585;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@700&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo span {
+            color: var(--gold);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .question-container {
+            margin: 2rem 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            color: var(--gold);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+        }
+
+        .option-card.correct {
+            background: rgba(76, 201, 240, 0.2);
+            border-color: var(--success);
+        }
+
+        .option-card.incorrect {
+            background: rgba(247, 37, 133, 0.2);
+            border-color: var(--error);
+        }
+
+        .explanation {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+            display: none;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .quiz-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.3);
+        }
+
+        .quiz-btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .results-container {
+            text-align: center;
+            display: none;
+        }
+
+        .score {
+            font-size: 2rem;
+            color: var(--gold);
+            margin: 1rem 0;
+        }
+
+        .restart-btn {
+            background: var(--primary);
+            margin-top: 2rem;
+        }
+
+        footer {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 4rem 2rem 2rem;
+            text-align: center;
+            clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+            position: relative;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+            
+            .quiz-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">Geometría <span>Del Cilindro</span></div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                <a href="index.html"><i class="fas fa-broadcast-tower"></i> Programas</a>
+                <a href="index.html"><i class="fas fa-envelope"></i> Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">Quiz de Cilindros</h1>
+            <div class="progress-bar">
+                <div class="progress" id="quiz-progress"></div>
+            </div>
+        </div>
+
+        <div id="question-container">
+            <!-- Las preguntas se cargarán dinámicamente -->
+        </div>
+
+        <div class="results-container" id="results-container">
+            <h2>¡Quiz Completado!</h2>
+            <div class="score" id="final-score"></div>
+            <p id="result-message"></p>
+            <button class="quiz-btn restart-btn" onclick="restartQuiz()">
+                <i class="fas fa-redo"></i> Intentar de nuevo
+            </button>
+        </div>
+
+        <div class="navigation-buttons">
+            <button class="quiz-btn" id="prev-btn" onclick="previousQuestion()" style="display: none;">
+                <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            <button class="quiz-btn" id="next-btn" onclick="nextQuestion()">
+                Siguiente <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <footer id="contacto">
+        
+        <p class="copyright">© 2025 Geometría del Cilindro. Todos los derechos reservados.</p>
+
+    </footer>
+
+    <!-- Elementos de audio para los sonidos -->
+    <audio id="correct-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3" preload="auto"></audio>
+    <audio id="incorrect-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3" preload="auto"></audio>
+
+    <script>
+        // Preguntas basadas exclusivamente en el material proporcionado
+        const questions = [
+            {
+                question: "¿Qué es un cilindro?",
+                options: [
+                    "Un poliedro con caras triangulares",
+                    "Un sólido con bases cuadradas y superficie curva",
+                    "Un sólido geométrico con dos bases circulares paralelas y superficie curva",
+                    "Una figura plana con tres lados"
+                ],
+                correct: 2,
+                explanation: "Correcto: Un cilindro es un sólido geométrico que tiene dos bases circulares paralelas y una superficie curva que las conecta, como explicó nuestro experto."
+            },
+            {
+                question: "¿Cuál es la fórmula correcta para el volumen de un cilindro?",
+                options: [
+                    "V = 2πrh",
+                    "V = πr²h",
+                    "V = 4/3πr³",
+                    "V = πr² + 2πrh"
+                ],
+                correct: 1,
+                explanation: "Exacto: Como nos enseñaron, el volumen se calcula con V = πr²h, donde r es el radio y h la altura del cilindro."
+            },
+            {
+                question: "¿Cuáles son las partes principales de un cilindro?",
+                options: [
+                    "Base, vértice y arista",
+                    "Dos bases circulares, altura y superficie lateral",
+                    "Generatriz, eje y diámetro",
+                    "Tres caras planas y una curva"
+                ],
+                correct: 1,
+                explanation: "Perfecto: Las partes principales son las dos bases circulares, la altura (distancia entre bases) y la superficie lateral, tal como mencionó nuestro invitado."
+            },
+            {
+                question: "¿Qué característica NO corresponde a un cilindro?",
+                options: [
+                    "Tiene simetría axial",
+                    "Es un poliedro",
+                    "Se forma girando un rectángulo",
+                    "Tiene 3 superficies (2 planas y 1 curva)"
+                ],
+                correct: 1,
+                explanation: "Correcto: El cilindro NO es un poliedro porque tiene superficies curvas, como se explicó en el programa."
+            },
+            {
+                question: "¿Qué tipo de cilindro tiene generatriz perpendicular a las bases?",
+                options: [
+                    "Cilindro oblicuo",
+                    "Cilindro recto",
+                    "Cilindro elíptico",
+                    "Cilindro circular"
+                ],
+                correct: 1,
+                explanation: "Así es: El cilindro recto tiene la generatriz perpendicular a las bases, mientras que en el oblicuo está inclinada."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = Array(questions.length).fill(null);
+        let questionOrder = [];
+        let optionOrders = []; // Almacenará el orden aleatorio de opciones para cada pregunta
+        let score = 0;
+
+        // Elementos de audio
+        const correctSound = document.getElementById('correct-sound');
+        const incorrectSound = document.getElementById('incorrect-sound');
+
+        // Función para mezclar arrays (algoritmo Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Mezclar preguntas y opciones al inicio
+        function initializeQuiz() {
+            // Mezclar orden de preguntas
+            questionOrder = shuffleArray(questions.map((_, index) => index));
+            
+            // Mezclar opciones para cada pregunta y guardar el orden original
+            optionOrders = questions.map((q, qIndex) => {
+                const optionsWithIndex = q.options.map((option, i) => ({ option, originalIndex: i }));
+                return shuffleArray(optionsWithIndex);
+            });
+        }
+
+        // Mostrar pregunta actual con opciones aleatorias
+        function showQuestion() {
+            const questionData = questions[questionOrder[currentQuestionIndex]];
+            const currentOptionOrder = optionOrders[questionOrder[currentQuestionIndex]];
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+            
+            let questionHTML = `
+                <div class="question-container">
+                    <div class="question-number">Pregunta ${currentQuestionIndex + 1} de ${questions.length}</div>
+                    <div class="question-text">${questionData.question}</div>
+                    <div class="options-grid">
+            `;
+            
+            currentOptionOrder.forEach((optionObj, displayIndex) => {
+                const originalIndex = optionObj.originalIndex;
+                let optionClass = "option-card";
+                
+                if (userAnswers[questionOrder[currentQuestionIndex]] !== null) {
+                    // Mostrar retroalimentación después de responder
+                    if (originalIndex === questionData.correct) {
+                        optionClass += " correct";
+                    } else if (originalIndex === userAnswers[questionOrder[currentQuestionIndex]] && originalIndex !== questionData.correct) {
+                        optionClass += " incorrect";
+                    }
+                } else if (originalIndex === userAnswers[questionOrder[currentQuestionIndex]]) {
+                    optionClass += " selected";
+                }
+                
+                questionHTML += `
+                    <div class="${optionClass}" onclick="selectOption(${originalIndex})">
+                        ${optionObj.option}
+                    </div>
+                `;
+            });
+            
+            questionHTML += `
+                    </div>
+                    <div class="explanation" id="explanation" style="display: ${userAnswers[questionOrder[currentQuestionIndex]] !== null ? 'block' : 'none'}">
+                        ${questionData.explanation}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('question-container').innerHTML = questionHTML;
+            updateNavigationButtons();
+        }
+
+        // Seleccionar una opción
+        function selectOption(originalIndex) {
+            if (userAnswers[questionOrder[currentQuestionIndex]] !== null) return;
+            
+            userAnswers[questionOrder[currentQuestionIndex]] = originalIndex;
+            const questionData = questions[questionOrder[currentQuestionIndex]];
+            
+            // Reproducir sonido según si la respuesta es correcta o incorrecta
+            if (originalIndex === questionData.correct) {
+                correctSound.currentTime = 0; // Reiniciar el sonido si ya estaba reproduciéndose
+                correctSound.play();
+                score++;
+            } else {
+                incorrectSound.currentTime = 0;
+                incorrectSound.play();
+            }
+            
+            showQuestion();
+        }
+
+        // Actualizar botones de navegación
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.style.display = currentQuestionIndex === 0 ? 'none' : 'flex';
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = "Finalizar";
+                nextBtn.innerHTML = "Finalizar <i class='fas fa-check'></i>";
+            } else {
+                nextBtn.textContent = "Siguiente";
+                nextBtn.innerHTML = "Siguiente <i class='fas fa-arrow-right'></i>";
+            }
+            
+            if (userAnswers[questionOrder[currentQuestionIndex]] === null) {
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.disabled = false;
+            }
+        }
+
+        // Navegar a la pregunta anterior
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        // Navegar a la siguiente pregunta o finalizar
+        function nextQuestion() {
+            if (userAnswers[questionOrder[currentQuestionIndex]] === null) return;
+            
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Mostrar resultados finales
+        function showResults() {
+            const questionContainer = document.getElementById('question-container');
+            const resultsContainer = document.getElementById('results-container');
+            const finalScore = document.getElementById('final-score');
+            const resultMessage = document.getElementById('result-message');
+            
+            questionContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            finalScore.textContent = `${score} de ${questions.length} correctas (${percentage}%)`;
+            
+            if (percentage >= 80) {
+                resultMessage.textContent = "¡Excelente! Demuestras un gran conocimiento sobre cilindros, igual que nuestros expertos invitados.";
+            } else if (percentage >= 50) {
+                resultMessage.textContent = "¡Buen trabajo! Has acertado más de la mitad, pero puedes repasar los conceptos del programa.";
+            } else {
+                resultMessage.textContent = "¡Sigue practicando! Te recomendamos escuchar nuevamente nuestro programa sobre cilindros.";
+            }
+            
+            document.getElementById('prev-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        // Reiniciar el quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = Array(questions.length).fill(null);
+            initializeQuiz();
+            
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'flex';
+            
+            showQuestion();
+        }
+
+        // Inicializar el quiz
+        initializeQuiz();
+        showQuestion();
+    </script>
+</body>
+</html>
